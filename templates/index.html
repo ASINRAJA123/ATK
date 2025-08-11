@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CODISSIA Live Event Dashboard</title>
+    
+    <!-- Added Font Awesome for professional icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* --- NEW PROFESSIONAL DARK THEME --- */
+        :root {
+            --bg-dark: #1a1c23;
+            --card-bg: rgba(40, 42, 54, 0.6);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-light: #f8f9fa;
+            --text-muted: #a9b1d6;
+            --primary-accent: #7aa2f7; /* A professional blue */
+            --secondary-accent: #e0af68; /* A warm, contrasting gold/orange */
+            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at top, rgba(122, 162, 247, 0.1), transparent 40%);
+            color: var(--text-light);
+            margin: 0;
+            padding: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            width: 100%;
+            max-width: 1400px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        
+        /* --- HEADER --- */
+        .dashboard-header {
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        .dashboard-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin: 5px 0 0;
+        }
+
+        /* --- GRAND TOTAL CARD --- */
+        .grand-total-card {
+            background: linear-gradient(135deg, var(--primary-accent), #4a7de0);
+            color: var(--text-light);
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            animation: fadeIn 1s ease-out 0.2s backwards;
+        }
+        .grand-total-card p {
+            margin: 0 0 10px;
+            font-size: 1.5rem;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+        .grand-total-card h2 {
+            margin: 0;
+            font-size: 4.5rem;
+            font-weight: 700;
+            letter-spacing: -2px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        /* --- GENERAL CARD STYLING --- */
+        .card {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px); /* Glassmorphism effect */
+            -webkit-backdrop-filter: blur(10px);
+            border-top: 4px solid var(--primary-accent);
+            animation: fadeIn 1s ease-out 0.4s backwards;
+        }
+        .card.secondary {
+            border-top-color: var(--secondary-accent);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-light);
+        }
+        .card h3 i {
+            color: var(--primary-accent);
+        }
+        .card.secondary h3 i {
+            color: var(--secondary-accent);
+        }
+        
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            gap: 20px;
+        }
+        .stat {
+            flex: 1;
+        }
+        .stat-value {
+            font-size: 3rem;
+            font-weight: 700;
+            line-height: 1.1;
+            color: var(--text-light);
+            /* This will be animated by the JS */
+            animation: fadeIn 0.5s ease-out;
+        }
+        .stat-label {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* Responsive adjustments */
+        @media (min-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        @media (min-width: 1024px) {
+            .dashboard-header h1 { font-size: 3rem; }
+            .grand-total-card h2 { font-size: 6rem; }
+            .stat-value { font-size: 3.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+    
+    <!-- Page Header -->
+    <header class="dashboard-header">
+        <h1>CODISSIA Live Dashboard</h1>
+        <p>Real-time event analytics for footfall and vehicle movement</p>
+    </header>
+
+    <!-- Grand Total Display -->
+    <div class="grand-total-card">
+        <p>Total Live Footfall</p>
+        <h2 id="cumulative-total">--</h2>
+    </div>
+
+    <div class="content-grid">
+        <!-- People Counting Section -->
+        <div class="card">
+            <h3><i class="fas fa-walking"></i> Visitor Gate Traffic</h3>
+            <div class="stats-container">
+                <div class="stat">
+                    <div id="people-in" class="stat-value">--</div>
+                    <div class="stat-label">Visitors In</div>
+                </div>
+                <div class="stat">
+                    <div id="people-out" class="stat-value">--</div>
+                    <div class="stat-label">Visitors Out</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIP Vehicle Section -->
+        <div class="card secondary">
+            <h3><i class="fas fa-car-alt"></i> Vehicle Gate Traffic</h3>
+            <div class="stats-container">
+                 <div class="stat">
+                    <div id="vehicle-count" class="stat-value">--</div>
+                    <div class="stat-label">Total Vehicles</div>
+                </div>
+                <div class="stat">
+                    <div id="estimated-people" class="stat-value">--</div>
+                    <div class="stat-label">Estimated Occupants (4/car)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- NO CHANGES NEEDED IN THE SCRIPT ---
+    // The script works perfectly with the new HTML structure as the IDs are the same.
+    const API_URL = '/api/dashboard_data';
+
+    // Helper function to animate the update
+    function updateElement(id, value) {
+        const element = document.getElementById(id);
+        if (element.innerText !== value) {
+            // Add a class to restart the animation
+            element.classList.remove('fade-in-value');
+            void element.offsetWidth; // Trigger a reflow to restart animation
+            element.classList.add('fade-in-value');
+            element.innerText = value;
+        }
+    }
+
+    async function updateDashboard() {
+        try {
+            const response = await fetch(API_URL);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const data = await response.json();
+            
+            // Use a helper function to make the updates feel more dynamic
+            updateElement('cumulative-total', data.cumulative_total.toLocaleString());
+            updateElement('people-in', data.people_in.toLocaleString());
+            updateElement('people-out', data.people_out.toLocaleString());
+            updateElement('vehicle-count', data.vehicle_count.toLocaleString());
+            updateElement('estimated-people', data.estimated_people_from_vehicles.toLocaleString());
+
+        } catch (error) {
+            console.error("❌ Could not fetch data:", error);
+            // Update the main display to show an error state
+            const totalElement = document.getElementById('cumulative-total');
+            totalElement.innerText = "Error";
+            totalElement.style.fontSize = "4rem"; // Make error text smaller
+        }
+    }
+    
+    // Add a simple CSS keyframe animation for the value updates
+    const styleSheet = document.createElement("style");
+    styleSheet.innerText = `
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in-value {
+            animation: fadeIn 0.4s ease-in-out;
+        }
+    `;
+    document.head.appendChild(styleSheet);
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updateDashboard();
+        setInterval(updateDashboard, 5000); // Fetch data every 5 seconds
+    });
+</script>
+
+</body>
+</html>
