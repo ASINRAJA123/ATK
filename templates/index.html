@@ -5,19 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CODISSIA Live Event Dashboard</title>
     
-    <!-- Added Font Awesome for professional icons -->
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
+    <!-- --- NEW: flatpickr CSS for beautiful date/time pickers --- -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    
     <style>
-        /* --- NEW PROFESSIONAL DARK THEME --- */
         :root {
             --bg-dark: #1a1c23;
             --card-bg: rgba(40, 42, 54, 0.6);
             --border-color: rgba(255, 255, 255, 0.1);
+            --input-bg: rgba(0, 0, 0, 0.3);
             --text-light: #f8f9fa;
             --text-muted: #a9b1d6;
-            --primary-accent: #7aa2f7; /* A professional blue */
-            --secondary-accent: #e0af68; /* A warm, contrasting gold/orange */
+            --primary-accent: #7aa2f7;
+            --secondary-accent: #e0af68;
+            --tertiary-accent: #9ece6a;
             --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
 
@@ -33,132 +37,129 @@
             color: var(--text-light);
             margin: 0;
             padding: 24px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
         }
 
         .dashboard-container {
             width: 100%;
             max-width: 1400px;
+            margin: 0 auto;
             display: flex;
             flex-direction: column;
             gap: 24px;
         }
         
-        /* --- HEADER --- */
-        .dashboard-header {
-            text-align: center;
-            animation: fadeIn 0.8s ease-out;
+        .dashboard-header { text-align: center; animation: fadeIn 0.5s ease-out; }
+        .dashboard-header h1 { font-size: 2.5rem; margin: 0; letter-spacing: 1px; font-weight: 600; }
+        .dashboard-header .view-mode { font-size: 1rem; color: var(--secondary-accent); font-weight: 500; display: block; margin-top: 5px; }
+        
+        /* --- NEW: Responsive Filter Controls Styling --- */
+        .filter-controls {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-wrap: wrap; /* This is key for responsiveness */
+            gap: 20px;
+            align-items: flex-end; /* Aligns items to the bottom */
+            justify-content: center;
+            animation: fadeIn 0.7s ease-out 0.2s backwards;
         }
-        .dashboard-header h1 {
-            font-size: 2.5rem;
-            margin: 0;
-            letter-spacing: 1px;
-            font-weight: 600;
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1 1 280px; /* Flex-grow, flex-shrink, flex-basis */
+            min-width: 280px; /* Prevents it from getting too small */
         }
-        .dashboard-header p {
+        .filter-group label {
+            font-size: 0.9rem;
+            font-weight: 500;
             color: var(--text-muted);
-            font-size: 1.1rem;
-            margin: 5px 0 0;
         }
+        .filter-group input {
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .filter-buttons {
+            display: flex;
+            gap: 12px;
+            flex: 1 1 100%; /* Take full width on small screens */
+            justify-content: flex-end;
+        }
+        .filter-buttons button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+        }
+        #apply-filter-btn { background-color: var(--primary-accent); color: var(--bg-dark); }
+        #apply-filter-btn:hover { background-color: #a9c1f9; }
+        #reset-filter-btn { background-color: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-muted); }
+        #reset-filter-btn:hover { background-color: var(--border-color); color: var(--text-light); }
 
-        /* --- GRAND TOTAL CARD --- */
         .grand-total-card {
             background: linear-gradient(135deg, var(--primary-accent), #4a7de0);
-            color: var(--text-light);
-            padding: 40px;
-            border-radius: 16px;
-            text-align: center;
-            box-shadow: var(--shadow);
-            animation: fadeIn 1s ease-out 0.2s backwards;
+            padding: 40px; border-radius: 16px; text-align: center;
+            box-shadow: var(--shadow); animation: fadeIn 0.9s ease-out 0.3s backwards;
         }
-        .grand-total-card p {
-            margin: 0 0 10px;
-            font-size: 1.5rem;
-            font-weight: 300;
-            opacity: 0.9;
-        }
-        .grand-total-card h2 {
-            margin: 0;
-            font-size: 4.5rem;
-            font-weight: 700;
-            letter-spacing: -2px;
-        }
+        .grand-total-card p { margin: 0 0 10px; font-size: 1.5rem; font-weight: 300; opacity: 0.9; }
+        .grand-total-card h2 { margin: 0; font-size: 4.5rem; font-weight: 700; letter-spacing: -2px; }
 
-        .content-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 24px;
-        }
-
-        /* --- GENERAL CARD STYLING --- */
+        .content-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
         .card {
-            background-color: var(--card-bg);
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(10px); /* Glassmorphism effect */
-            -webkit-backdrop-filter: blur(10px);
-            border-top: 4px solid var(--primary-accent);
-            animation: fadeIn 1s ease-out 0.4s backwards;
+            background-color: var(--card-bg); padding: 25px; border-radius: 12px;
+            box-shadow: var(--shadow); border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border-top: 4px solid var(--primary-accent); animation: fadeIn 1.1s ease-out 0.4s backwards;
         }
-        .card.secondary {
-            border-top-color: var(--secondary-accent);
-        }
+        .card.secondary { border-top-color: var(--secondary-accent); }
+        .card.tertiary { border-top-color: var(--tertiary-accent); }
+        .card h3 { margin: 0 0 25px; font-size: 1.5rem; display: flex; align-items: center; gap: 12px; }
+        .card h3 i { color: var(--primary-accent); }
+        .card.secondary h3 i { color: var(--secondary-accent); }
+        .card.tertiary h3 i { color: var(--tertiary-accent); }
+        .stats-container { display: flex; justify-content: space-around; text-align: center; gap: 20px; }
+        .stat { flex: 1; }
+        .stat-value { font-size: 3rem; font-weight: 700; color: var(--text-light); }
+        .stat-label { font-size: 1rem; color: var(--text-muted); margin-top: 8px; }
 
-        .card h3 {
-            margin-top: 0;
-            margin-bottom: 25px;
-            font-size: 1.5rem;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: var(--text-light);
-        }
-        .card h3 i {
-            color: var(--primary-accent);
-        }
-        .card.secondary h3 i {
-            color: var(--secondary-accent);
-        }
-        
-        .stats-container {
-            display: flex;
-            justify-content: space-around;
-            text-align: center;
-            gap: 20px;
-        }
-        .stat {
-            flex: 1;
-        }
-        .stat-value {
-            font-size: 3rem;
-            font-weight: 700;
-            line-height: 1.1;
-            color: var(--text-light);
-            /* This will be animated by the JS */
-            animation: fadeIn 0.5s ease-out;
-        }
-        .stat-label {
-            font-size: 1rem;
-            color: var(--text-muted);
-            margin-top: 8px;
-        }
-
-        /* Responsive adjustments */
         @media (min-width: 768px) {
-            .content-grid {
-                grid-template-columns: 1fr 1fr;
-            }
+            .content-grid { grid-template-columns: 1fr 1fr; }
+            .filter-buttons { flex-basis: auto; /* Allow buttons to not take full width */ }
         }
-        @media (min-width: 1024px) {
+        @media (min-width: 1200px) {
+            .content-grid { grid-template-columns: 1fr 1fr 1fr; }
             .dashboard-header h1 { font-size: 3rem; }
             .grand-total-card h2 { font-size: 6rem; }
             .stat-value { font-size: 3.5rem; }
+        }
+        
+        /* --- NEW: flatpickr Theme Customization --- */
+        .flatpickr-calendar {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+        }
+        .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange {
+            background: var(--primary-accent);
+            border-color: var(--primary-accent);
+        }
+        .flatpickr-time input.flatpickr-hour, .flatpickr-time input.flatpickr-minute {
+            color: var(--text-light);
+            background: var(--input-bg);
+        }
+        span.flatpickr-weekday, .flatpickr-monthDropdown-months .flatpickr-monthDropdown-month {
+            color: var(--text-muted);
         }
     </style>
 </head>
@@ -166,108 +167,188 @@
 
 <div class="dashboard-container">
     
-    <!-- Page Header -->
     <header class="dashboard-header">
-        <h1>CODISSIA Live Dashboard</h1>
+        <h1>CODISSIA Dashboard <span id="view-mode-indicator" class="view-mode">(Live)</span></h1>
     </header>
 
-    <!-- Grand Total Display -->
+    <!-- --- MODIFIED: Filter Controls with new structure and inputs --- -->
+    <div class="filter-controls">
+        <div class="filter-group">
+            <label for="start-date-time">Start Date & Time</label>
+            <input type="text" id="start-date-time" placeholder="Select Start Date...">
+        </div>
+        <div class="filter-group">
+            <label for="end-date-time">End Date & Time</label>
+            <input type="text" id="end-date-time" placeholder="Select End Date...">
+        </div>
+        <div class="filter-buttons">
+            <button id="reset-filter-btn"><i class="fas fa-sync-alt"></i> Show Live</button>
+            <button id="apply-filter-btn"><i class="fas fa-filter"></i> Apply Filter</button>
+        </div>
+    </div>
+
     <div class="grand-total-card">
-        <p>Total People in</p>
+        <p id="grand-total-label">Total People in (Walk-ins + VIP Car Occupants)</p>
         <h2 id="cumulative-total">--</h2>
     </div>
 
     <div class="content-grid">
-        <!-- People Counting Section -->
         <div class="card">
             <h3><i class="fas fa-walking"></i> Main Entrance People Traffic</h3>
             <div class="stats-container">
-                <div class="stat">
-                    <div id="people-in" class="stat-value">--</div>
-                    <div class="stat-label">Visitors In</div>
-                </div>
-                <div class="stat">
-                    <div id="people-out" class="stat-value">--</div>
-                    <div class="stat-label">Visitors Out</div>
-                </div>
+                <div class="stat"><div id="people-in" class="stat-value">--</div><div class="stat-label">Visitors In</div></div>
+                <div class="stat"><div id="people-out" class="stat-value">--</div><div class="stat-label">Visitors Out</div></div>
             </div>
         </div>
-
-        <!-- VIP Vehicle Section -->
         <div class="card secondary">
             <h3><i class="fas fa-car-alt"></i> VIP Vehicle Gate Traffic</h3>
             <div class="stats-container">
-                 <div class="stat">
-                    <div id="vehicle-count" class="stat-value">--</div>
-                    <div class="stat-label">Total Vehicles</div>
-                </div>
-                <div class="stat">
-                    <div id="estimated-people" class="stat-value">--</div>
-                    <div class="stat-label">Estimated Occupants (4/car)</div>
-                </div>
+                 <div class="stat"><div id="vehicle-count" class="stat-value">--</div><div class="stat-label">Total VIP Vehicles</div></div>
+                 <div class="stat"><div id="estimated-people" class="stat-value">--</div><div class="stat-label">Estimated Occupants (4/car)</div></div>
+            </div>
+        </div>
+        <div class="card tertiary">
+            <h3><i class="fas fa-truck-moving"></i> Entrance Gate Vehicle Traffic</h3>
+            <div class="stats-container">
+                 <div class="stat"><div id="front-vehicle-count" class="stat-value">--</div><div class="stat-label">Total Vehicles</div></div>
             </div>
         </div>
     </div>
 </div>
 
-<script>
-    // --- NO CHANGES NEEDED IN THE SCRIPT ---
-    // The script works perfectly with the new HTML structure as the IDs are the same.
-    const API_URL = '/api/dashboard_data';
+<!-- --- NEW: flatpickr JS --- -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-    // Helper function to animate the update
+<script>
+    const API_BASE_URL = '/api/dashboard_data';
+    let liveUpdateIntervalID = null;
+
+    // --- MODIFIED: Element References ---
+    const elements = {
+        viewModeIndicator: document.getElementById('view-mode-indicator'),
+        grandTotalLabel: document.getElementById('grand-total-label'),
+        cumulativeTotal: document.getElementById('cumulative-total'),
+        applyBtn: document.getElementById('apply-filter-btn'),
+        resetBtn: document.getElementById('reset-filter-btn'),
+        // References to flatpickr instances, not just the inputs
+        startPicker: null,
+        endPicker: null
+    };
+    
     function updateElement(id, value) {
         const element = document.getElementById(id);
-        if (element.innerText !== value) {
-            // Add a class to restart the animation
+        const formattedValue = typeof value === 'number' ? value.toLocaleString() : value;
+        if (element && element.innerText !== formattedValue) {
             element.classList.remove('fade-in-value');
-            void element.offsetWidth; // Trigger a reflow to restart animation
+            void element.offsetWidth; 
             element.classList.add('fade-in-value');
-            element.innerText = value;
+            element.innerText = formattedValue;
         }
     }
 
-    async function updateDashboard() {
+    async function fetchAndUpdateDashboard(url) {
         try {
-            const response = await fetch(API_URL);
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
             const data = await response.json();
             
-            // Use a helper function to make the updates feel more dynamic
-            updateElement('cumulative-total', data.cumulative_total.toLocaleString());
-            updateElement('people-in', data.people_in.toLocaleString());
-            updateElement('people-out', data.people_out.toLocaleString());
-            updateElement('vehicle-count', data.vehicle_count.toLocaleString());
-            updateElement('estimated-people', data.estimated_people_from_vehicles.toLocaleString());
+            updateElement('cumulative-total', data.cumulative_total);
+            updateElement('people-in', data.people_in);
+            updateElement('people-out', data.people_out);
+            updateElement('vehicle-count', data.vehicle_count);
+            updateElement('estimated-people', data.estimated_people_from_vehicles);
+            updateElement('front-vehicle-count', data.front_gate_vehicle_count);
 
         } catch (error) {
             console.error("❌ Could not fetch data:", error);
-            // Update the main display to show an error state
-            const totalElement = document.getElementById('cumulative-total');
-            totalElement.innerText = "Error";
-            totalElement.style.fontSize = "4rem"; // Make error text smaller
+            elements.cumulativeTotal.innerText = "Error";
+            elements.cumulativeTotal.style.fontSize = "4rem";
         }
     }
-    
-    // Add a simple CSS keyframe animation for the value updates
+
+    function setLiveMode() {
+        clearInterval(liveUpdateIntervalID);
+        fetchAndUpdateDashboard(API_BASE_URL);
+        liveUpdateIntervalID = setInterval(() => fetchAndUpdateDashboard(API_BASE_URL), 5000);
+
+        elements.viewModeIndicator.textContent = '(Live)';
+        elements.grandTotalLabel.textContent = 'Today\'s Total People In (Walk-ins + VIP Cars)';
+        
+        // --- MODIFIED: Clear flatpickr inputs and reset to default ---
+        if (elements.startPicker && elements.endPicker) {
+            const now = new Date();
+            // Set start to beginning of today
+            const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0);
+            elements.startPicker.setDate(startOfToday, false); // false to not trigger onChange
+            elements.endPicker.setDate(now, false);
+        }
+    }
+
+    function setFilteredMode() {
+        const startDateStr = elements.startPicker.input.value;
+        const endDateStr = elements.endPicker.input.value;
+
+        if (!startDateStr || !endDateStr) {
+            alert('Please select both a start and end date.');
+            return;
+        }
+        if (elements.startPicker.selectedDates[0] > elements.endPicker.selectedDates[0]) {
+            alert('Start date cannot be after end date.');
+            return;
+        }
+
+        clearInterval(liveUpdateIntervalID);
+
+        // Split the "YYYY-MM-DD HH:MM" string for the API
+        const [startDate, startTime] = startDateStr.split(' ');
+        const [endDate, endTime] = endDateStr.split(' ');
+
+        const params = new URLSearchParams({
+            start_date: startDate,
+            start_time: startTime,
+            end_date: endDate,
+            end_time: endTime
+        });
+
+        fetchAndUpdateDashboard(`${API_BASE_URL}?${params.toString()}`);
+        elements.viewModeIndicator.textContent = '(Filtered Range)';
+        elements.grandTotalLabel.textContent = 'Total People In Filtered Range';
+    }
+
     const styleSheet = document.createElement("style");
-    styleSheet.innerText = `
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .fade-in-value {
-            animation: fadeIn 0.4s ease-in-out;
-        }
-    `;
+    styleSheet.innerText = `@keyframes fadeInValue { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } } .fade-in-value { animation: fadeInValue 0.4s ease-in-out; }`;
     document.head.appendChild(styleSheet);
 
-
+    // --- MODIFIED: DOMContentLoaded to initialize flatpickr ---
     document.addEventListener('DOMContentLoaded', () => {
-        updateDashboard();
-        setInterval(updateDashboard, 5000); // Fetch data every 5 seconds
+        const now = new Date();
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0);
+
+        const flatpickrConfig = {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i", // Format matches Python's %Y-%m-%d %H:%M
+            altInput: true, // Shows a user-friendly date format
+            altFormat: "F j, Y h:i K", // e.g., "August 12, 2025 02:30 PM"
+        };
+        
+        // Initialize start date picker
+        elements.startPicker = flatpickr("#start-date-time", {
+            ...flatpickrConfig,
+            defaultDate: startOfToday,
+        });
+
+        // Initialize end date picker
+        elements.endPicker = flatpickr("#end-date-time", {
+            ...flatpickrConfig,
+            defaultDate: now,
+            maxDate: now // Prevent selecting future dates
+        });
+
+        elements.applyBtn.addEventListener('click', setFilteredMode);
+        elements.resetBtn.addEventListener('click', setLiveMode);
+        
+        // Initial load in Live Mode
+        setLiveMode();
     });
 </script>
 
