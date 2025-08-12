@@ -8,7 +8,7 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <!-- --- NEW: flatpickr CSS for beautiful date/time pickers --- -->
+    <!-- flatpickr CSS for beautiful date/time pickers -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     
     <style>
@@ -52,16 +52,16 @@
         .dashboard-header h1 { font-size: 2.5rem; margin: 0; letter-spacing: 1px; font-weight: 600; }
         .dashboard-header .view-mode { font-size: 1rem; color: var(--secondary-accent); font-weight: 500; display: block; margin-top: 5px; }
         
-        /* --- NEW: Responsive Filter Controls Styling --- */
+        /* --- Responsive Filter Controls Styling --- */
         .filter-controls {
             background-color: var(--card-bg);
             padding: 20px;
             border-radius: 12px;
             border: 1px solid var(--border-color);
             display: flex;
-            flex-wrap: wrap; /* This is key for responsiveness */
+            flex-wrap: wrap; 
             gap: 20px;
-            align-items: flex-end; /* Aligns items to the bottom */
+            align-items: flex-end;
             justify-content: center;
             animation: fadeIn 0.7s ease-out 0.2s backwards;
         }
@@ -69,8 +69,8 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            flex: 1 1 280px; /* Flex-grow, flex-shrink, flex-basis */
-            min-width: 280px; /* Prevents it from getting too small */
+            flex: 1 1 280px; 
+            min-width: 280px;
         }
         .filter-group label {
             font-size: 0.9rem;
@@ -90,7 +90,7 @@
         .filter-buttons {
             display: flex;
             gap: 12px;
-            flex: 1 1 100%; /* Take full width on small screens */
+            flex: 1 1 100%; 
             justify-content: flex-end;
         }
         .filter-buttons button {
@@ -135,7 +135,7 @@
 
         @media (min-width: 768px) {
             .content-grid { grid-template-columns: 1fr 1fr; }
-            .filter-buttons { flex-basis: auto; /* Allow buttons to not take full width */ }
+            .filter-buttons { flex-basis: auto; }
         }
         @media (min-width: 1200px) {
             .content-grid { grid-template-columns: 1fr 1fr 1fr; }
@@ -144,23 +144,45 @@
             .stat-value { font-size: 3.5rem; }
         }
         
-        /* --- NEW: flatpickr Theme Customization --- */
+        /* --- NEW & IMPROVED: flatpickr Dark Theme Customization --- */
         .flatpickr-calendar {
-            background: var(--bg-dark);
+            background: #282a36; /* A slightly different dark for popups */
             border: 1px solid var(--border-color);
             color: var(--text-light);
+            box-shadow: var(--shadow);
         }
+        .flatpickr-months .flatpickr-month, .flatpickr-current-month, .flatpickr-current-month .numInputWrapper {
+            color: var(--text-light);
+        }
+        .flatpickr-months .flatpickr-prev-month, .flatpickr-months .flatpickr-next-month {
+            fill: var(--text-light);
+        }
+        .flatpickr-day { color: var(--text-muted); }
+        .flatpickr-day:hover { background: var(--input-bg); }
+        .flatpickr-day.today { border-color: var(--secondary-accent); }
         .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange {
             background: var(--primary-accent);
             border-color: var(--primary-accent);
+            color: var(--bg-dark);
+        }
+        .flatpickr-day.disabled {
+            color: rgba(169, 177, 214, 0.3);
+            cursor: not-allowed;
+        }
+        .flatpickr-time, .flatpickr-time .numInputWrapper {
+            color: var(--text-light);
         }
         .flatpickr-time input.flatpickr-hour, .flatpickr-time input.flatpickr-minute {
             color: var(--text-light);
             background: var(--input-bg);
         }
-        span.flatpickr-weekday, .flatpickr-monthDropdown-months .flatpickr-monthDropdown-month {
-            color: var(--text-muted);
+        .flatpickr-time .arrowUp, .flatpickr-time .arrowDown {
+            border-bottom-color: var(--text-light);
         }
+        .flatpickr-time .arrowDown {
+            border-top-color: var(--text-light);
+        }
+        span.flatpickr-weekday { color: var(--text-light); font-weight: 500;}
     </style>
 </head>
 <body>
@@ -171,7 +193,6 @@
         <h1>CODISSIA Dashboard <span id="view-mode-indicator" class="view-mode">(Live)</span></h1>
     </header>
 
-    <!-- --- MODIFIED: Filter Controls with new structure and inputs --- -->
     <div class="filter-controls">
         <div class="filter-group">
             <label for="start-date-time">Start Date & Time</label>
@@ -188,7 +209,7 @@
     </div>
 
     <div class="grand-total-card">
-        <p id="grand-total-label">Total People in (Walk-ins + VIP Car Occupants)</p>
+        <p id="grand-total-label">Today's Total People In (Walk-ins + VIP Cars)</p>
         <h2 id="cumulative-total">--</h2>
     </div>
 
@@ -216,21 +237,19 @@
     </div>
 </div>
 
-<!-- --- NEW: flatpickr JS --- -->
+<!-- flatpickr JS -->
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <script>
     const API_BASE_URL = '/api/dashboard_data';
     let liveUpdateIntervalID = null;
 
-    // --- MODIFIED: Element References ---
     const elements = {
         viewModeIndicator: document.getElementById('view-mode-indicator'),
         grandTotalLabel: document.getElementById('grand-total-label'),
         cumulativeTotal: document.getElementById('cumulative-total'),
         applyBtn: document.getElementById('apply-filter-btn'),
         resetBtn: document.getElementById('reset-filter-btn'),
-        // References to flatpickr instances, not just the inputs
         startPicker: null,
         endPicker: null
     };
@@ -272,34 +291,38 @@
         liveUpdateIntervalID = setInterval(() => fetchAndUpdateDashboard(API_BASE_URL), 5000);
 
         elements.viewModeIndicator.textContent = '(Live)';
-        elements.grandTotalLabel.textContent = 'Today\'s Total People In (Walk-ins + VIP Cars)';
+        elements.grandTotalLabel.textContent = "Today's Total People In (Walk-ins + VIP Cars)";
         
-        // --- MODIFIED: Clear flatpickr inputs and reset to default ---
         if (elements.startPicker && elements.endPicker) {
             const now = new Date();
-            // Set start to beginning of today
             const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0);
-            elements.startPicker.setDate(startOfToday, false); // false to not trigger onChange
+            elements.startPicker.setDate(startOfToday, false);
             elements.endPicker.setDate(now, false);
         }
     }
 
     function setFilteredMode() {
-        const startDateStr = elements.startPicker.input.value;
-        const endDateStr = elements.endPicker.input.value;
+        // --- FUNCTIONAL FIX: Use selectedDates array instead of input value ---
+        const selectedStartDate = elements.startPicker.selectedDates[0];
+        const selectedEndDate = elements.endPicker.selectedDates[0];
 
-        if (!startDateStr || !endDateStr) {
+        if (!selectedStartDate || !selectedEndDate) {
             alert('Please select both a start and end date.');
             return;
         }
-        if (elements.startPicker.selectedDates[0] > elements.endPicker.selectedDates[0]) {
+        if (selectedStartDate > selectedEndDate) {
             alert('Start date cannot be after end date.');
             return;
         }
 
         clearInterval(liveUpdateIntervalID);
 
-        // Split the "YYYY-MM-DD HH:MM" string for the API
+        // --- FUNCTIONAL FIX: Use flatpickr's formatter for reliability ---
+        const dateFormat = "Y-m-d H:i";
+        const startDateStr = flatpickr.formatDate(selectedStartDate, dateFormat);
+        const endDateStr = flatpickr.formatDate(selectedEndDate, dateFormat);
+        
+        // Split the correctly formatted string for the API
         const [startDate, startTime] = startDateStr.split(' ');
         const [endDate, endTime] = endDateStr.split(' ');
 
@@ -319,35 +342,23 @@
     styleSheet.innerText = `@keyframes fadeInValue { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } } .fade-in-value { animation: fadeInValue 0.4s ease-in-out; }`;
     document.head.appendChild(styleSheet);
 
-    // --- MODIFIED: DOMContentLoaded to initialize flatpickr ---
     document.addEventListener('DOMContentLoaded', () => {
         const now = new Date();
         const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0);
 
         const flatpickrConfig = {
             enableTime: true,
-            dateFormat: "Y-m-d H:i", // Format matches Python's %Y-%m-%d %H:%M
-            altInput: true, // Shows a user-friendly date format
-            altFormat: "F j, Y h:i K", // e.g., "August 12, 2025 02:30 PM"
+            dateFormat: "Y-m-d H:i",
+            altInput: true,
+            altFormat: "F j, Y h:i K",
         };
         
-        // Initialize start date picker
-        elements.startPicker = flatpickr("#start-date-time", {
-            ...flatpickrConfig,
-            defaultDate: startOfToday,
-        });
-
-        // Initialize end date picker
-        elements.endPicker = flatpickr("#end-date-time", {
-            ...flatpickrConfig,
-            defaultDate: now,
-            maxDate: now // Prevent selecting future dates
-        });
+        elements.startPicker = flatpickr("#start-date-time", { ...flatpickrConfig, defaultDate: startOfToday });
+        elements.endPicker = flatpickr("#end-date-time", { ...flatpickrConfig, defaultDate: now, maxDate: now });
 
         elements.applyBtn.addEventListener('click', setFilteredMode);
         elements.resetBtn.addEventListener('click', setLiveMode);
         
-        // Initial load in Live Mode
         setLiveMode();
     });
 </script>
