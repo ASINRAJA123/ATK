@@ -41,12 +41,10 @@
         padding: 16px;
         color: var(--text-light);
         min-height: 100vh;
-
-        /* --- BACKGROUND IMAGE SETUP --- */
         background-color: var(--bg-dark);
         background-image: 
             linear-gradient(rgba(26, 28, 35, 0.75), rgba(26, 28, 35, 0.75)),
-            url('YOUR-IMAGE-NAME.jpg');
+            url('static/aliyar-bg.jpg');
         background-size: cover;
         background-position: center center;
         background-attachment: fixed;
@@ -68,7 +66,6 @@
         padding: 0 16px;
     }
 
-    /* --- STYLE FOR THE NEW TAMIL GREETING --- */
     .tamil-greeting {
         font-family: 'Catamaran', sans-serif;
         font-size: 1.8rem;
@@ -80,9 +77,8 @@
         line-height: 1.2;
     }
     
-    /* --- LOGO IMAGE - MADE BIGGER FOR ALL DEVICES --- */
     .header-logo {
-        height: 80px; /* Increased from 60px */
+        height: 80px;
         width: auto;
         max-width: 100%;
         margin-bottom: 20px;
@@ -100,6 +96,16 @@
         word-break: break-word;
     }
     
+    /* --- NEW: Style for the Last Updated Timestamp --- */
+    .last-updated-container {
+        font-size: 0.9rem;
+        color:#e0af68;
+        margin-top: 12px;
+        opacity: 0.9;
+        font-style: italic;
+        animation: fadeIn 0.9s ease-out 0.2s backwards;
+    }
+
     .grand-total-card {
         background: linear-gradient(135deg, var(--primary-accent), #4a7de0);
         padding: 24px 20px;
@@ -117,27 +123,9 @@
         text-align: center;
         flex-wrap: wrap;
     }
-
-    .grand-total-card .stat {
-        flex: 1;
-        min-width: 140px;
-    }
-
-    .grand-total-card p { 
-        margin: 0 0 12px; 
-        font-size: 1.2rem; 
-        font-weight: 300; 
-        opacity: 0.9;
-        line-height: 1.3;
-    }
-    
-    .grand-total-card h2 { 
-        margin: 0; 
-        font-size: 3.5rem; 
-        font-weight: 700; 
-        letter-spacing: -1px;
-        line-height: 1;
-    }
+    .grand-total-card .stat { min-width: 140px; }
+    .grand-total-card p { margin: 0 0 12px; font-size: 1.2rem; font-weight: 300; opacity: 0.9; line-height: 1.3; }
+    .grand-total-card h2 { margin: 0; font-size: 3.5rem; font-weight: 700; letter-spacing: -1px; line-height: 1; }
 
     .content-grid { 
         display: grid; 
@@ -157,268 +145,20 @@
         -webkit-backdrop-filter: blur(10px);
         border-top: 4px solid var(--secondary-accent);
         animation: fadeIn 1.1s ease-out 0.4s backwards;
-        max-width: 600px;
+        max-width: 680px;
         margin: 0 auto;
         width: 100%;
     }
 
-    .card h3 { 
-        margin: 0 0 24px; 
-        font-size: 1.4rem; 
-        display: flex; 
-        align-items: center; 
-        gap: 12px;
-        line-height: 1.3;
-        flex-wrap: wrap;
-    }
-    
-    .card h3 i { 
-        color: var(--secondary-accent);
-        flex-shrink: 0;
-    }
+    .card h3 { margin: 0 0 24px; font-size: 1.4rem; display: flex; align-items: center; gap: 12px; line-height: 1.3; flex-wrap: wrap; }
+    .card h3 i { color: var(--secondary-accent); flex-shrink: 0; }
+    .stats-container { display: flex; justify-content: space-around; text-align: center; gap: 16px; flex-wrap: wrap; }
+    .stat { flex: 1; min-width: 100px; }
+    .stat-value { font-size: 2.5rem; font-weight: 700; color: var(--text-light); line-height: 1.1; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .stat-value i { font-size: 1.8rem; color: var(--text-muted); opacity: 0.8; }
+    .stat-label { font-size: 0.95rem; color: var(--text-muted); margin-top: 8px; line-height: 1.3; }
 
-    .stats-container { 
-        display: flex; 
-        justify-content: space-around; 
-        text-align: center; 
-        gap: 16px;
-        flex-wrap: wrap;
-    }
-    
-    .stat { 
-        flex: 1;
-        min-width: 120px;
-    }
-    
-    .stat-value { 
-        font-size: 2.5rem; 
-        font-weight: 700; 
-        color: var(--text-light);
-        line-height: 1.1;
-    }
-    
-    .stat-label { 
-        font-size: 0.95rem; 
-        color: var(--text-muted); 
-        margin-top: 8px;
-        line-height: 1.3;
-    }
-
-    /* Tablet styles */
-    @media (min-width: 768px) {
-        body {
-            padding: 24px;
-        }
-        
-        .tamil-greeting {
-            font-size: 2.2rem;
-        }
-        
-        .header-logo {
-            height: 100px; /* Bigger on tablets */
-        }
-        
-        .dashboard-header h1 {
-            font-size: 2.8rem;
-        }
-        
-        .grand-total-card {
-            padding: 32px 40px;
-            margin: 0;
-        }
-        
-        .grand-total-card h2 {
-            font-size: 4.5rem;
-        }
-        
-        .grand-total-card p {
-            font-size: 1.4rem;
-        }
-        
-        .content-grid {
-            padding: 0;
-        }
-        
-        .card {
-            padding: 28px 32px;
-        }
-        
-        .card h3 {
-            font-size: 1.6rem;
-        }
-        
-        .stat-value {
-            font-size: 3.2rem;
-        }
-        
-        .stat-label {
-            font-size: 1rem;
-        }
-    }
-
-    /* Desktop styles */
-    @media (min-width: 1200px) {
-        .tamil-greeting { 
-            font-size: 2.8rem; 
-        }
-        
-        .header-logo { 
-            height: 120px; /* Even bigger on desktop */
-        }
-        
-        .dashboard-header h1 { 
-            font-size: 3.5rem; 
-        }
-        
-        .grand-total-card h2 { 
-            font-size: 6rem; 
-        }
-        
-        .grand-total-card p {
-            font-size: 1.6rem;
-        }
-        
-        .stat-value { 
-            font-size: 3.8rem; 
-        }
-        
-        .stat-label {
-            font-size: 1.1rem;
-        }
-        
-        .card h3 {
-            font-size: 1.7rem;
-        }
-    }
-
-    /* Very small mobile devices */
-    @media (max-width: 480px) {
-        body {
-            padding: 12px;
-        }
-        
-        .tamil-greeting {
-            font-size: 1.6rem;
-        }
-        
-        .header-logo {
-            height: 70px; /* Still bigger than original */
-            margin-bottom: 16px;
-        }
-        
-        .dashboard-header h1 {
-            font-size: 1.7rem;
-            letter-spacing: 0.2px;
-        }
-        
-        .grand-total-card {
-            padding: 20px 16px;
-            margin: 0 8px;
-        }
-        
-        .grand-total-card h2 {
-            font-size: 2.8rem;
-        }
-        
-        .grand-total-card p {
-            font-size: 1rem;
-        }
-        
-        .grand-total-stats {
-            gap: 12px;
-        }
-        
-        .grand-total-card .stat {
-            min-width: 120px;
-        }
-        
-        .content-grid {
-            padding: 0 8px;
-            gap: 16px;
-        }
-        
-        .card {
-            padding: 20px 16px;
-        }
-        
-        .card h3 {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-        }
-        
-        .stat-value {
-            font-size: 2.2rem;
-        }
-        
-        .stat-label {
-            font-size: 0.85rem;
-        }
-        
-        .stats-container {
-            gap: 12px;
-        }
-        
-        .stat {
-            min-width: 100px;
-        }
-    }
-
-    /* Extra small screens */
-    @media (max-width: 320px) {
-        .tamil-greeting {
-            font-size: 1.4rem;
-        }
-        
-        .header-logo {
-            height: 60px; /* Still respectable size on tiny screens */
-        }
-        
-        .dashboard-header h1 {
-            font-size: 1.5rem;
-        }
-        
-        .grand-total-card h2 {
-            font-size: 2.4rem;
-            letter-spacing: 0;
-        }
-        
-        .stat-value {
-            font-size: 2rem;
-        }
-    }
-
-    /* Landscape orientation on mobile */
-    @media (max-height: 500px) and (orientation: landscape) {
-        .header-logo {
-            height: 50px;
-            margin-bottom: 12px;
-        }
-        
-        .tamil-greeting {
-            font-size: 1.4rem;
-            margin-bottom: 12px;
-        }
-        
-        .dashboard-header h1 {
-            font-size: 1.6rem;
-        }
-        
-        .grand-total-card {
-            padding: 16px;
-        }
-        
-        .card {
-            padding: 16px;
-        }
-    }
-
-    /* High DPI displays */
-    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-        .header-logo {
-            image-rendering: -webkit-optimize-contrast;
-            image-rendering: crisp-edges;
-        }
-    }
+    @media (min-width: 768px) { body { padding: 24px; } .header-logo { height: 100px; } .dashboard-header h1 { font-size: 2.8rem; } .grand-total-card { padding: 32px 40px; margin: 0; } .grand-total-card h2 { font-size: 4.5rem; } .card { padding: 28px 32px; } .card h3 { font-size: 1.6rem; } .stat-value { font-size: 3.2rem; } }
 </style>
 </head>
 <body>
@@ -427,11 +167,17 @@
     
     <header class="dashboard-header">
         <p class="tamil-greeting">வாழ்க வளமுடன்</p>
-        
-        <!-- Image is now bigger on all devices -->
         <img src="static/aliyar-bg.jpg" alt="Vethathiri Maharishi Logo" class="header-logo">
+        <h1>ஆழியாறு அறிவுத் திருக்கோவில்<br>Live Dashboard</h1>
         
-        <h1>ALIYAR ARIVUTHIRUKOIL Live Dashboard</h1>
+        <!-- ============================================== -->
+        <!-- ===== NEW: Last Updated Timestamp Display ==== -->
+        <!-- ============================================== -->
+        <div class="last-updated-container">
+            Data Last Synced: <span id="last-updated-time">--</span>
+        </div>
+        <!-- ============================================== -->
+
     </header>
 
     <div class="grand-total-card">
@@ -449,10 +195,40 @@
 
     <div class="content-grid">
         <div class="card">
-            <h3><i class="fas fa-car-alt"></i> Vehicle Gate Car IN</h3>
+            <h3><i class="fas fa-traffic-light"></i> Vehicle Gate IN Counts</h3>
+            
+            <!-- Container for individual vehicle types -->
             <div class="stats-container">
-                 <div class="stat"><div id="vehicle-count" class="stat-value">--</div><div class="stat-label">Total VIP Vehicles</div></div>
-                 <div class="stat"><div id="estimated-people" class="stat-value">--</div><div class="stat-label">Estimated Occupants (4/car)</div></div>
+                <div class="stat">
+                    <div class="stat-value"><i class="fas fa-motorcycle"></i><span id="motorcycle-count">--</span></div>
+                    <div class="stat-label">Motorcycles</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value"><i class="fas fa-car"></i><span id="car-count">--</span></div>
+                    <div class="stat-label">Cars</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value"><i class="fas fa-truck"></i><span id="truck-count">--</span></div>
+                    <div class="stat-label">Trucks</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value"><i class="fas fa-bus"></i><span id="bus-count">--</span></div>
+                    <div class="stat-label">Buses</div>
+                </div>
+            </div>
+
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 24px 0;">
+
+            <!-- Container for summary vehicle stats -->
+            <div class="stats-container">
+                 <div class="stat">
+                     <div id="total-vehicle-count" class="stat-value">--</div>
+                     <div class="stat-label">Total Vehicles</div>
+                 </div>
+                 <div class="stat">
+                     <div id="estimated-people-from-vehicles" class="stat-value">--</div>
+                     <div class="stat-label">Est. People from Vehicles</div>
+                 </div>
             </div>
         </div>
     </div>
@@ -462,13 +238,17 @@
     const API_BASE_URL = '/api/dashboard_data';
 
     function updateElement(id, value) {
-        const element = document.getElementById(id);
+        let targetElement = document.getElementById(id);
+        if (targetElement && targetElement.tagName.toLowerCase() !== 'span') {
+             targetElement = targetElement.querySelector('span') || targetElement;
+        }
+
         const formattedValue = typeof value === 'number' ? value.toLocaleString() : value;
-        if (element && element.innerText !== formattedValue) {
-            element.classList.remove('fade-in-value');
-            void element.offsetWidth; 
-            element.classList.add('fade-in-value');
-            element.innerText = formattedValue;
+        if (targetElement && targetElement.innerText !== formattedValue) {
+            targetElement.classList.remove('fade-in-value');
+            void targetElement.offsetWidth; 
+            targetElement.classList.add('fade-in-value');
+            targetElement.innerText = formattedValue;
         }
     }
 
@@ -478,22 +258,27 @@
             if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
             const data = await response.json();
             
+            // --- NEW: Update the last updated time ---
+            updateElement('last-updated-time', data.stream_0_last_updated);
+            
             // Update the main stats
             updateElement('cumulative-total', data.cumulative_total);
             updateElement('people-out', data.people_out);
 
-            // Update the VIP vehicle card
-            updateElement('vehicle-count', data.vehicle_count);
-            updateElement('estimated-people', data.estimated_people_from_vehicles);
+            // Update vehicle stats
+            if (data.vehicle_counts) {
+                updateElement('motorcycle-count', data.vehicle_counts.motorcycle);
+                updateElement('car-count', data.vehicle_counts.car);
+                updateElement('truck-count', data.vehicle_counts.truck);
+                updateElement('bus-count', data.vehicle_counts.bus);
+                updateElement('total-vehicle-count', data.vehicle_counts.total);
+            }
+            updateElement('estimated-people-from-vehicles', data.estimated_people_from_vehicles);
 
         } catch (error) {
             console.error("❌ Could not fetch data:", error);
-            const cumulativeTotalEl = document.getElementById('cumulative-total');
-            if(cumulativeTotalEl) {
-                cumulativeTotalEl.innerText = "Error";
-                cumulativeTotalEl.style.fontSize = "4rem";
-                document.getElementById('people-out').innerText = "Error";
-            }
+            document.getElementById('cumulative-total').innerText = "Error";
+            document.getElementById('last-updated-time').innerText = "Connection Failed";
         }
     }
 
@@ -503,11 +288,8 @@
     document.head.appendChild(styleSheet);
 
     document.addEventListener('DOMContentLoaded', () => {
-        // Fetch data immediately on page load
         fetchAndUpdateDashboard();
-        
-        // Then, set an interval to refresh the data every 5 seconds
-        setInterval(fetchAndUpdateDashboard, 5000);
+        setInterval(fetchAndUpdateDashboard, 5000); // Refresh every 5 seconds
     });
 </script>
 
