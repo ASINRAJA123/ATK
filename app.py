@@ -15,8 +15,12 @@ CORS(app)
 try:
     client = MongoClient(MONGO_URI)
     db = client[DB_NAME]
+    # --- Data sources are clearly separated ---
+    # 1. Collection for People Data (updated by push.py)
     people_collection = db.people_counting_data
+    # 2. Collection for VIP Vehicle Data (updated by a separate process)
     vip_vehicle_collection = db.vehicle_counting_VIP
+    # 3. Collection for Front Gate Vehicle Data (updated by a separate process)
     front_vehicle_collection = db.vehicle_counting_front
     print("✅ Successfully connected to MongoDB and all collections.")
 except Exception as e:
@@ -35,9 +39,9 @@ def get_dashboard_data():
         return jsonify({"error": "Database connection failed"}), 500
 
     try:
-        # --- LOGIC FOR LIVE (TODAY'S) DATA ---
-
-        # 1. Get People Data for Today
+        # --- STEP 1: Get People In/Out Counts for Today ---
+        # This data comes from the 'people_counting_data' collection,
+        # which is populated by your updated push.py script.
         people_data_doc = people_collection.find_one({"_id": "full_dashboard_data"})
         total_people_in = 0
         total_people_out = 0
@@ -49,14 +53,17 @@ def get_dashboard_data():
                     total_people_in += stream_data.get('in_count', 0)
                     total_people_out += stream_data.get('out_count', 0)
 
-        # 2. Get Total Vehicle Counts (as per original live logic)
+        # --- STEP 2: Get Vehicle Counts (from separate collections) ---
+        # This logic is UNCHANGED, as requested. It reads from the vehicle-specific
+        # collections and is NOT affected by the people-only push.py script.
         vip_vehicle_data = vip_vehicle_collection.find_one({"_id": "vehicle_count_data"})
         vip_vehicle_count = len(vip_vehicle_data.get('data', [])) if vip_vehicle_data else 0
 
         front_vehicle_doc = front_vehicle_collection.find_one({"_id": "vehicle_count_data"})
         front_gate_vehicle_count = len(front_vehicle_doc.get('data', [])) if front_vehicle_doc else 0
 
-        # --- Final calculations ---
+        # --- STEP 3: Final calculations ---
+        # Combines the data from the separate sources for the dashboard display.
         estimated_people_from_vehicles = vip_vehicle_count * 4
         cumulative_total = total_people_in + estimated_people_from_vehicles
 
