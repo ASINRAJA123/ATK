@@ -2,6 +2,7 @@ from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
 from pymongo import MongoClient
 from datetime import datetime
+import traceback
 
 # --- Configuration ---
 MONGO_URI = "mongodb+srv://student:student@cluster0.tt1v1.mongodb.net/"
@@ -15,12 +16,8 @@ CORS(app)
 try:
     client = MongoClient(MONGO_URI)
     db = client[DB_NAME]
-    # --- Data sources are clearly separated ---
-    # 1. Collection for People Data (updated by push.py)
     people_collection = db.people_counting_data
-    # 2. Collection for VIP Vehicle Data (updated by a separate process)
     vip_vehicle_collection = db.vehicle_counting_VIP
-    # 3. Collection for Front Gate Vehicle Data (updated by a separate process)
     front_vehicle_collection = db.vehicle_counting_front
     print("✅ Successfully connected to MongoDB and all collections.")
 except Exception as e:
@@ -39,47 +36,61 @@ def get_dashboard_data():
         return jsonify({"error": "Database connection failed"}), 500
 
     try:
-        # --- STEP 1: Get People In/Out Counts for Today ---
-        # This data comes from the 'people_counting_data' collection,
-        # which is populated by your updated push.py script.
+        # --- Get People Data and Last Updated Time ---
         people_data_doc = people_collection.find_one({"_id": "full_dashboard_data"})
         total_people_in = 0
         total_people_out = 0
+        stream_0_last_updated = "N/A"  # Default value in case it's not found
+
         if people_data_doc and 'data' in people_data_doc:
             today_str = datetime.now().strftime('%Y-%m-%d')
             data_for_today = people_data_doc.get('data', {}).get(today_str)
+            
             if data_for_today:
+                # Calculate total in/out from all streams for the day
                 for stream_data in data_for_today.values():
                     total_people_in += stream_data.get('in_count', 0)
                     total_people_out += stream_data.get('out_count', 0)
+                
+                # --- NEW: Get last_updated specifically from stream_0 ---
+                # Safely access the nested value using .get() to prevent errors
+                if 'stream_0' in data_for_today:
+                    stream_0_last_updated = data_for_today.get('stream_0', {}).get('last_updated', 'N/A')
 
-        # --- STEP 2: Get Vehicle Counts (from separate collections) ---
-        # This logic is UNCHANGED, as requested. It reads from the vehicle-specific
-        # collections and is NOT affected by the people-only push.py script.
-        vip_vehicle_data = vip_vehicle_collection.find_one({"_id": "vehicle_count_data"})
-        vip_vehicle_count = len(vip_vehicle_data.get('data', [])) if vip_vehicle_data else 0
-
+        # --- Get Vehicle Data ---
         front_vehicle_doc = front_vehicle_collection.find_one({"_id": "vehicle_count_data"})
         front_gate_vehicle_count = len(front_vehicle_doc.get('data', [])) if front_vehicle_doc else 0
 
-        # --- STEP 3: Final calculations ---
-        # Combines the data from the separate sources for the dashboard display.
-        estimated_people_from_vehicles = vip_vehicle_count * 4
+        vehicle_counts = {"motorcycle": 0, "car": 0, "truck": 0, "bus": 0, "total": 0}
+        estimated_people_from_vehicles = 0
+        vehicle_multipliers = {"motorcycle": 2, "car": 4, "truck": 10, "bus": 20}
+        
+        vip_vehicle_doc = vip_vehicle_collection.find_one({"_id": "vehicle_count_data"})
+        if vip_vehicle_doc and 'data' in vip_vehicle_doc:
+            all_vehicles = vip_vehicle_doc.get('data', [])
+            vehicle_counts["total"] = len(all_vehicles)
+            for vehicle in all_vehicles:
+                v_class = vehicle.get("Class", "").lower()
+                if v_class in vehicle_counts:
+                    vehicle_counts[v_class] += 1
+                estimated_people_from_vehicles += vehicle_multipliers.get(v_class, 0)
+        
+        # --- Final calculations and Response ---
         cumulative_total = total_people_in + estimated_people_from_vehicles
 
         response_data = {
             "people_in": total_people_in,
             "people_out": total_people_out,
-            "vehicle_count": vip_vehicle_count,
+            "vehicle_counts": vehicle_counts,
             "estimated_people_from_vehicles": estimated_people_from_vehicles,
             "cumulative_total": cumulative_total,
-            "front_gate_vehicle_count": front_gate_vehicle_count
+            "front_gate_vehicle_count": front_gate_vehicle_count,
+            "stream_0_last_updated": stream_0_last_updated  # Add the new data point to the response
         }
         
         return jsonify(response_data)
 
     except Exception as e:
-        import traceback
         print(f"Error in API endpoint: {e}")
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
